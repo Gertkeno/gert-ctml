@@ -15,15 +15,24 @@ std::string parse_data( char * dat )
 
 	while( dat[iterator] != '\0' )
 	{
+		if( dat[iterator] == '\\' )
+		{
+			//no magic check
+			fullread += dat[++iterator];
+			++iterator;
+			continue;
+		}
 		if( dat[iterator] == '[' )
 		{
-			std::string name;
-			std::vector<std::string> adds;
+			//make tag
+			std::string name;//tag name
+			std::vector<std::string> adds;//attributes
 			++iterator;
 			while( dat[iterator] != ' ' and dat[iterator] != '\n' and dat[iterator] != ']' )
 			{
 				if( not std::isalpha( dat[iterator] ) and not isdigit( dat[iterator] ) )
 				{
+					//attribute detected
 					std::string adtype;
 					switch( dat[iterator] )
 					{
@@ -32,7 +41,7 @@ std::string parse_data( char * dat )
 						case '@': adtype = "href"; break;
 						case '{': break;
 					}
-					std::string name;
+					std::string name;//attribute name
 					if( dat[iterator] == '{' )
 					{
 						//raw attribute add
@@ -65,9 +74,11 @@ std::string parse_data( char * dat )
 					if( not adtype.empty() ) adds.push_back( " " + adtype + "=\"" + name + "\"" );
 					continue;
 				}
+				//out of attribute detector
 				name += dat[iterator];
 				++iterator;
 			}
+			//got full tag name + attributes
 
 			tagNest.push_back( name );
 			fullread.append( "<" + name  );
@@ -83,10 +94,10 @@ std::string parse_data( char * dat )
 		//append end tag abc-cba style
 		if( dat[iterator] == ']' )
 		{
-			if( dat[iterator+1] != ')' ) 
-				fullread.append( "</" + tagNest.back() + ">" );
-			else
+			if( dat[iterator+1] == ')' )//no end tag
 				++iterator;
+			else
+				fullread.append( "</" + tagNest.back() + ">" );
 
 			if( tagNest.size() > 0 )
 				tagNest.pop_back();
