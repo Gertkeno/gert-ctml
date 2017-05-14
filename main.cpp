@@ -4,7 +4,7 @@
 
 typedef unsigned char ubyte;
 
-#define VERSION "0.2.0"
+#define VERSION "0.3.0"
 
 std::string parse_data( char * dat )
 {
@@ -12,11 +12,10 @@ std::string parse_data( char * dat )
 	std::vector<std::string> tagNest;
 
 	size_t iterator(0u);
-	bool startLine = true;
 
 	while( dat[iterator] != '\0' )
 	{
-		if( startLine and dat[iterator] == '[' )
+		if( dat[iterator] == '[' )
 		{
 			std::string name;
 			std::vector<std::string> adds;
@@ -34,9 +33,9 @@ std::string parse_data( char * dat )
 						case '{': break;
 					}
 					std::string name;
-					/* ++iterator; */
 					if( dat[iterator] == '{' )
 					{
+						//raw attribute add
 						++iterator;
 						while( dat[iterator] != '}' ) name += dat[iterator++];
 						adds.push_back( " "  + name );
@@ -45,6 +44,7 @@ std::string parse_data( char * dat )
 					}
 					else if( dat[iterator] == '@' )
 					{
+						//href getting link
 						while( dat[iterator] != ' ' and dat[iterator] != '\n' )
 						{
 							++iterator;
@@ -54,6 +54,7 @@ std::string parse_data( char * dat )
 						adds.push_back( " " + adtype + "=\"" + name + "\"" );
 						continue;
 					}
+					//class or ID
 					++iterator;
 					while( isalpha( dat[iterator] ) or isdigit( dat[iterator] ) )
 					{
@@ -75,10 +76,11 @@ std::string parse_data( char * dat )
 				fullread.append( adds[i] );
 			}
 			fullread.append( ">" );
-			startLine = false;
 			if( dat[iterator] == ' ' ) ++iterator;
+			continue;//in case two [ on same line
 		}
 
+		//append end tag abc-cba style
 		if( dat[iterator] == ']' )
 		{
 			if( dat[iterator+1] != ')' ) 
@@ -91,13 +93,7 @@ std::string parse_data( char * dat )
 			else
 				std::cout << "ERROR: too many ]\n";
 		}
-		else if( dat[iterator] == '\n' )
-		{
-			startLine = true;
-			fullread += '\n';
-			fullread.append( tagNest.size(), '\t' );
-		}
-		else if( not startLine )
+		else
 		{
 			fullread += dat[iterator];
 		}
@@ -126,7 +122,7 @@ int main( int argc, char** argv )
 					std::cout << "Version#" << VERSION << std::endl;
 					break;
 				case 'h':
-					std::cout << R"at(input file format:
+					std::cout << R"at(INPUT FILE FORMAT:
 [] is used to make a tag, any space after will be the contents of the tag, example below:
 	[p this will be text] -> <p>this will be text</p>
 
@@ -140,7 +136,11 @@ adding specifically class or ID attributes is easier, just append # or . after t
 	[div.large large class] -> <div class="large">large class</div>
 
 this works with href by adding @ after tag name declarations, this needs to be at the end as it stops at a space
-	[a.large@http://gert.us go to my website] -> <a class="large" href="http://gert.us">go to my website</a>)at" << std::endl;
+	[a.large@http://gert.us go to my website] -> <a class="large" href="http://gert.us">go to my website</a>
+
+COMMNAND LINE ARGUMENTS:
+-v * displays version
+-h * displays this text)at" << std::endl;
 			}
 			continue;
 		}
