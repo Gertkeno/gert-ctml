@@ -4,7 +4,7 @@
 
 typedef unsigned char ubyte;
 
-#define VERSION "0.4.2"
+#define VERSION "0.4.3"
 
 std::string parse_data( char * dat )
 {
@@ -23,7 +23,13 @@ std::string parse_data( char * dat )
 			++iterator;
 			continue;
 		}
-		if( dat[iterator] == '[' )
+		else if( dat[iterator] == '*' )
+		{
+			while( dat[++iterator] != '\n' );
+			++lineNumer;
+			continue;
+		}
+		else if( dat[iterator] == '[' )
 		{
 			//make tag
 			std::string name;//tag name
