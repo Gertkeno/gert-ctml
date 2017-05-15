@@ -5,9 +5,9 @@ if exists("b:current_syntax")
 	finish
 endif
 
-syn match tagStart '\(^\|\s\)\[\S\+' contains=tagAttrib
+syn match tagStart '\(^\|\s\)\[\(\S\+\|{.*}\)' contains=tagAttrib
 
-syn match tagAttrib '\(\.\|{\|\#\|@\)\S\+' contained
+syn match tagAttrib '\(\(\.\|\#\|@\)\S\+\|{.*}\)' contained
 
 syn match tagEnd '\])\|\]'
 
