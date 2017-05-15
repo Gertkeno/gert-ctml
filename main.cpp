@@ -12,6 +12,7 @@ std::string parse_data( char * dat )
 	std::vector<std::string> tagNest;
 
 	size_t iterator(0u);
+	size_t lineNumer(1u);
 
 	while( dat[iterator] != '\0' )
 	{
@@ -40,6 +41,7 @@ std::string parse_data( char * dat )
 						case '#': adtype = "id"; break;
 						case '@': adtype = "href"; break;
 						case '{': break;
+						case '[': std::cout << "WARNING: " << lineNumer << ": extra [ in tag name \"" << name << "\"\n";
 					}
 					std::string name;//attribute name
 					if( dat[iterator] == '{' )
@@ -96,16 +98,17 @@ std::string parse_data( char * dat )
 		{
 			if( dat[iterator+1] == ')' )//no end tag
 				++iterator;
-			else
+			else if( tagNest.size() > 0 )
 				fullread.append( "</" + tagNest.back() + ">" );
 
 			if( tagNest.size() > 0 )
 				tagNest.pop_back();
 			else
-				std::cout << "ERROR: too many ]\n";
+				std::cout << "WARNING: " << lineNumer << ": too many ]\n";
 		}
 		else
 		{
+			if( dat[iterator] == '\n' ) ++lineNumer;
 			fullread += dat[iterator];
 		}
 
@@ -134,11 +137,11 @@ int main( int argc, char** argv )
 					break;
 				case 'h':
 					std::cout << R"at(INPUT FILE FORMAT:
-[] is used to make a tag, any space after will be the contents of the tag, example below:
+[] is used to make a tag with a space after the tag name. Any characters after will be the contents of the tag, example below:
 	[p this will be text] -> <p>this will be text</p>
 
 adding ) to the end of [] tags will remove the end tag, example below:
-	[div extra text]) -> <div>extra text
+	[div unclosed div!]) -> <div>unclosed div!
 
 if you want to add any attributes to a tag just enclose the attribute in {} after tag name declaration
 	[meta{charset="UTF-8"}]) -> <meta charset="UTF-8">
