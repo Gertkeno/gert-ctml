@@ -4,7 +4,7 @@
 
 typedef unsigned char ubyte;
 
-#define VERSION "0.3.0"
+#define VERSION "0.4.2"
 
 std::string parse_data( char * dat )
 {
@@ -31,17 +31,21 @@ std::string parse_data( char * dat )
 			++iterator;
 			while( dat[iterator] != ' ' and dat[iterator] != '\n' and dat[iterator] != ']' )
 			{
-				if( not std::isalpha( dat[iterator] ) and not isdigit( dat[iterator] ) )
+				if( not isalpha( dat[iterator] ) and not isdigit( dat[iterator] ) )
 				{
 					//attribute detected
 					std::string adtype;
+					bool linkCheck = false;
 					switch( dat[iterator] )
 					{
 						case '.': adtype = "class"; break;
 						case '#': adtype = "id"; break;
-						case '@': adtype = "href"; break;
+						case '@': adtype = "href"; linkCheck = true; break;
+						case '$': adtype = "src"; linkCheck = true; break;
 						case '{': break;
-						case '[': std::cout << "WARNING: " << lineNumer << ": extra [ in tag name \"" << name << "\"\n";
+						case '[':
+							std::cout << "WARNING: " << lineNumer << ": extra [ in tag name \"" << name << "\"\n";
+							break;
 					}
 					std::string name;//attribute name
 					if( dat[iterator] == '{' )
@@ -53,7 +57,7 @@ std::string parse_data( char * dat )
 						++iterator;
 						continue;
 					}
-					else if( dat[iterator] == '@' )
+					else if( linkCheck )
 					{
 						//href getting link
 						while( dat[iterator] != ' ' and dat[iterator] != '\n' )
@@ -73,7 +77,16 @@ std::string parse_data( char * dat )
 						++iterator;
 					}
 
-					if( not adtype.empty() ) adds.push_back( " " + adtype + "=\"" + name + "\"" );
+					if( adtype.empty() )
+					{
+						std::cout << "WARNING: " << lineNumer << ": unkown attribute notator\n";
+						continue;
+					}
+					if( not name.empty() )
+						adds.push_back( " " + adtype + "=\"" + name + "\"" );
+					else
+						std::cout << "WARNING: " << lineNumer << ": class or ID specified but not set\n";
+
 					continue;
 				}
 				//out of attribute detector
@@ -146,11 +159,12 @@ adding ) to the end of [] tags will remove the end tag, example below:
 if you want to add any attributes to a tag just enclose the attribute in {} after tag name declaration
 	[meta{charset="UTF-8"}]) -> <meta charset="UTF-8">
 
-adding specifically class or ID attributes is easier, just append # or . after the tag name declaration
+adding specifically 'class' or 'id' attributes is easier, just append # or . after the tag name declaration
 	[div.large large class] -> <div class="large">large class</div>
 
-this works with href by adding @ after tag name declarations, this needs to be at the end as it stops at a space
+this works with 'href' by adding @ after tag name declarations, this needs to be at the end as it ends links with a space at a space
 	[a.large@http://gert.us go to my website] -> <a class="large" href="http://gert.us">go to my website</a>
+like href, 'src' attribute is applied with $
 
 COMMNAND LINE ARGUMENTS:
 -v * displays version
