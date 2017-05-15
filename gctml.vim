@@ -5,10 +5,14 @@ if exists("b:current_syntax")
 	finish
 endif
 
-syn match tagStart '\(^\|\s\)\[\w\+'
+syn match tagStart '\(^\|\s\)\[\S\+' contains=tagAttrib
+
+syn match tagAttrib '\(\.\|{\|\#\|@\)\S\+' contained
+
 syn match tagEnd '\])\|\]'
 
 let b:current_syntax = "gctml"
 
-hi def link tagStart Type
-hi def link tagEnd Type
+hi def link tagStart Constant
+hi def link tagEnd Constant
+hi def link tagAttrib Comment
