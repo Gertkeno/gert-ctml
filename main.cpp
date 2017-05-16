@@ -4,7 +4,7 @@
 
 typedef unsigned char ubyte;
 
-#define VERSION "0.4.4"
+#define VERSION "0.4.5"
 
 std::string parse_data( char * dat )
 {
@@ -26,9 +26,9 @@ std::string parse_data( char * dat )
 		else if( dat[iterator] == '*' )
 		{
 			fullread.append( "<!--" );
-			while( dat[++iterator] != '\n' ) fullread += dat[iterator];
+			while( dat[++iterator] != '\n' and dat[iterator] != '*' ) fullread += dat[iterator];
 			fullread.append( "-->" );
-			++lineNumer;
+			if( dat[iterator] == '*' ) ++iterator;
 			continue;
 		}
 		else if( dat[iterator] == '[' )
@@ -173,6 +173,11 @@ adding specifically 'class' or 'id' attributes is easier, just append # or . aft
 this works with 'href' by adding @ after tag name declarations, this needs to be at the end as it ends links with a space at a space
 	[a.large@http://gert.us go to my website] -> <a class="large" href="http://gert.us">go to my website</a>
 like href, 'src' attribute is applied with $
+
+putting a * will comment out the rest of the line or until another *, this doesn't work in tag name declartion
+	*[a a comment] -> <!-- [a a comment] -->
+	*[a a comment]* [p real text] -> <!--[a a comment]--> <p>real text</p>
+	[a*not a comment*] -> ERROR
 
 COMMNAND LINE ARGUMENTS:
 -v * displays version

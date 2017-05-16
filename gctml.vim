@@ -10,7 +10,7 @@ syn match tagCustomAttrib '\v\{.*\}' contained
 syn match tagQuickAttrib '\v(\.|\$|\#|\@)\S+' contained
 syn match tagEnd '\v\\=(]\)|])' contains=escaped
 syn match escaped '\\.'
-syn match tagComment '\v\*.*'
+syn match tagComment '\v(\*.*\*)|(\*.*)'
 
 let b:current_syntax = "gctml"
 
