@@ -4,7 +4,7 @@
 
 typedef unsigned char ubyte;
 
-#define VERSION "0.4.3"
+#define VERSION "0.4.4"
 
 std::string parse_data( char * dat )
 {
@@ -25,7 +25,9 @@ std::string parse_data( char * dat )
 		}
 		else if( dat[iterator] == '*' )
 		{
-			while( dat[++iterator] != '\n' );
+			fullread.append( "<!--" );
+			while( dat[++iterator] != '\n' ) fullread += dat[iterator];
+			fullread.append( "-->" );
 			++lineNumer;
 			continue;
 		}
