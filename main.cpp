@@ -4,7 +4,7 @@
 
 typedef unsigned char ubyte;
 
-#define VERSION "0.4.5"
+#define VERSION "0.4.6"
 
 std::string parse_data( char * dat )
 {
@@ -35,7 +35,7 @@ std::string parse_data( char * dat )
 		{
 			//make tag
 			std::string name;//tag name
-			std::vector<std::string> adds;//attributes
+			std::string adds;//attributes
 			++iterator;
 			while( dat[iterator] != ' ' and dat[iterator] != '\n' and dat[iterator] != ']' )
 			{
@@ -55,13 +55,14 @@ std::string parse_data( char * dat )
 							std::cout << "WARNING: " << lineNumer << ": extra [ in tag name \"" << name << "\"\n";
 							break;
 					}
-					std::string name;//attribute name
+					//attribute name
+					std::string name;
 					if( dat[iterator] == '{' )
 					{
 						//raw attribute add
 						++iterator;
 						while( dat[iterator] != '}' ) name += dat[iterator++];
-						adds.push_back( " "  + name );
+						adds.append( " "  + name );
 						++iterator;
 						continue;
 					}
@@ -74,7 +75,7 @@ std::string parse_data( char * dat )
 							name += dat[iterator];
 						}
 						name.pop_back();
-						adds.push_back( " " + adtype + "=\"" + name + "\"" );
+						adds.append( " " + adtype + "=\"" + name + "\"" );
 						continue;
 					}
 					//class or ID
@@ -91,7 +92,7 @@ std::string parse_data( char * dat )
 						continue;
 					}
 					if( not name.empty() )
-						adds.push_back( " " + adtype + "=\"" + name + "\"" );
+						adds.append( " " + adtype + "=\"" + name + "\"" );
 					else
 						std::cout << "WARNING: " << lineNumer << ": class or ID specified but not set\n";
 
@@ -105,10 +106,7 @@ std::string parse_data( char * dat )
 
 			tagNest.push_back( name );
 			fullread.append( "<" + name  );
-			for( size_t i = 0; i < adds.size(); i++ )
-			{
-				fullread.append( adds[i] );
-			}
+			fullread.append( adds );
 			fullread.append( ">" );
 			if( dat[iterator] == ' ' ) ++iterator;
 			continue;//in case two [ on same line
