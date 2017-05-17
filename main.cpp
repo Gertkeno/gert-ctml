@@ -4,11 +4,14 @@
 
 typedef unsigned char ubyte;
 
-#define VERSION "0.4.6"
+#define VERSION "0.4.7"
+bool strip;
 
 std::string parse_data( char * dat )
 {
-	std::string fullread = "<!-- Made with gert-ctml version#" VERSION " -->\n";
+	std::string fullread;
+	if( not strip ) fullread.append( "<!-- Made with gert-ctml version#" VERSION " -->\n" );
+	fullread.append( "<!DOCTYPE html>\n" );
 	std::vector<std::string> tagNest;
 
 	size_t iterator(0u);
@@ -25,9 +28,16 @@ std::string parse_data( char * dat )
 		}
 		else if( dat[iterator] == '*' )
 		{
-			fullread.append( "<!--" );
-			while( dat[++iterator] != '\n' and dat[iterator] != '*' ) fullread += dat[iterator];
-			fullread.append( "-->" );
+			if( strip )
+			{
+				while( dat[++iterator] != '\n' and dat[iterator] != '*' );
+			}
+			else
+			{
+				fullread.append( "<!--" );
+				while( dat[++iterator] != '\n' and dat[iterator] != '*' ) fullread += dat[iterator];
+				fullread.append( "-->" );
+			}
 			if( dat[iterator] == '*' ) ++iterator;
 			continue;
 		}
@@ -144,6 +154,7 @@ int main( int argc, char** argv )
 		std::cout << "No input file. -h for help\n";
 		return EXIT_FAILURE;
 	}
+	strip = false;
 
 	for( ubyte i = 1u; i < argc; i++ )
 	{
@@ -153,6 +164,10 @@ int main( int argc, char** argv )
 			{
 				case 'v':
 					std::cout << "Version#" << VERSION << std::endl;
+					break;
+				case 's':
+					std::cout << "STRIPPING ENABLED\n";
+					strip = true;
 					break;
 				case 'h':
 					std::cout << R"at(INPUT FILE FORMAT:
@@ -178,6 +193,7 @@ putting a * will comment out the rest of the line or until another *, this doesn
 	[a*not a comment*] -> ERROR
 
 COMMNAND LINE ARGUMENTS:
+-s * removes comments
 -v * displays version
 -h * displays this text)at" << std::endl;
 			}
