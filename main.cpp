@@ -224,6 +224,7 @@ COMMNAND LINE ARGUMENTS:
 		}
 		std::string outData = parse_data( readData );
 		outFile << outData;
+		outFile << '\n';
 
 		/* std::cout << outData << std::endl; */
 		//clean up
