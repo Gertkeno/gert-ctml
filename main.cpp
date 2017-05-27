@@ -4,7 +4,7 @@
 
 typedef unsigned char ubyte;
 
-#define VERSION "0.4.9"
+#define VERSION "0.4.10"
 bool strip;
 
 std::string parse_data( char * dat )
@@ -28,16 +28,15 @@ std::string parse_data( char * dat )
 		}
 		else if( dat[iterator] == '*' )
 		{
-			if( strip )
-			{
-				while( dat[++iterator] != '\n' and dat[iterator] != '*' and dat[iterator] != '\0' );
-			}
-			else
-			{
-				fullread.append( "<!--" );
-				while( dat[++iterator] != '\n' and dat[iterator] != '*' and dat[iterator] != '\0' ) fullread += dat[iterator];
-				fullread.append( "-->" );
-			}
+			std::string commentStr;
+
+			commentStr.append( "<!--" );
+			while( dat[++iterator] != '\n' and dat[iterator] != '*' and dat[iterator] != '\0' ) commentStr += dat[iterator];
+			commentStr.append( "-->" );
+
+			if( not strip )
+				fullread.append( commentStr );
+
 			if( dat[iterator] == '*' ) ++iterator;
 			continue;
 		}
