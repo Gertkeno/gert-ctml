@@ -4,7 +4,7 @@
 
 typedef unsigned char ubyte;
 
-#define VERSION "0.4.8"
+#define VERSION "0.4.9"
 bool strip;
 
 std::string parse_data( char * dat )
@@ -90,7 +90,7 @@ std::string parse_data( char * dat )
 					}
 					//class or ID
 					++iterator;
-					while( isalpha( dat[iterator] ) or isdigit( dat[iterator] ) )
+					while( isalpha( dat[iterator] ) or isdigit( dat[iterator] ) or dat[iterator] == '-' )
 					{
 						name += dat[iterator];
 						++iterator;
