@@ -61,7 +61,7 @@ std::string parse_data( char * dat )
 						case '$': adtype = "src"; linkCheck = true; break;
 						case '{': break;
 						case '[':
-							std::cout << "WARNING: " << lineNumer << ": extra [ in tag name \"" << name << "\"\n";
+							std::cout << "WARNING: " << lineNumer << ": extra [ in tag name \"" << name << "\".\n";
 							break;
 					}
 					//attribute name
@@ -97,13 +97,13 @@ std::string parse_data( char * dat )
 
 					if( adtype.empty() )
 					{
-						std::cout << "WARNING: " << lineNumer << ": unkown attribute notator\n";
+						std::cout << "WARNING: " << lineNumer << ": unkown attribute notator.\n";
 						continue;
 					}
 					if( not name.empty() )
 						adds.append( " " + adtype + "=\"" + name + "\"" );
 					else
-						std::cout << "WARNING: " << lineNumer << ": class or ID specified but not set\n";
+						std::cout << "WARNING: " << lineNumer << ": class or ID specified but not set.\n";
 
 					continue;
 				}
@@ -132,7 +132,7 @@ std::string parse_data( char * dat )
 			if( tagNest.size() > 0 )
 				tagNest.pop_back();
 			else
-				std::cout << "WARNING: " << lineNumer << ": too many ]\n";
+				std::cout << "WARNING: " << lineNumer << ": too many end tags ( ] ).\n";
 		}
 		else
 		{
@@ -171,31 +171,32 @@ int main( int argc, char** argv )
 				case 'h':
 					std::cout << R"at(INPUT FILE FORMAT:
 [] is used to make a tag with a space after the tag name. Any characters after will be the contents of the tag, example below:
-	[p this will be text] -> <p>this will be text</p>
+   [p this will be text]              <p>this will be text</p>
 
 adding ) to the end of [] tags will remove the end tag, example below:
-	[div unclosed div!]) -> <div>unclosed div!
+   [div unclosed div!])               <div>unclosed div!
 
 if you want to add any attributes to a tag just enclose the attribute in {} after tag name declaration
-	[meta{charset="UTF-8"}]) -> <meta charset="UTF-8">
+   [meta{charset="UTF-8"}])           <meta charset="UTF-8">
 
 adding specifically 'class' or 'id' attributes is easier, just append # or . after the tag name declaration
-	[div.large large class] -> <div class="large">large class</div>
+   [div.large large class]            <div class="large">large class</div>
 
 this works with 'href' by adding @ after tag name declarations, this needs to be at the end as it ends links with a space at a space
-	[a.large@http://gert.us go to my website] -> <a class="large" href="http://gert.us">go to my website</a>
+   [a.large@http://gert.us website]   <a class="large" href="http://gert.us">website</a>
 like href, 'src' attribute is applied with $
 
 putting a * will comment out the rest of the line or until another *, this doesn't work in tag name declartion
-	*[a a comment] -> <!-- [a a comment] -->
-	*[a a comment]* [p real text] -> <!--[a a comment]--> <p>real text</p>
-	[a*not a comment*] -> ERROR
+   *[a a comment]                     <!-- [a a comment] -->
+   *[a a comment]* [p real text]      <!--[a a comment]--> <p>real text</p>
+   [a*not a comment*]                 ERROR
 
 COMMNAND LINE ARGUMENTS:
 -s * removes comments
 -v * displays version
 -h * displays this text)at" << std::endl;
 			}
+			
 			continue;
 		}
 		//read file
