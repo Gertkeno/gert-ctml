@@ -4,7 +4,7 @@
 
 typedef unsigned char ubyte;
 
-#define VERSION "0.4.10"
+#define VERSION "0.4.11"
 bool strip;
 
 std::string parse_data( char * dat )
@@ -165,36 +165,41 @@ int main( int argc, char** argv )
 					std::cout << "Version#" << VERSION << std::endl;
 					break;
 				case 's':
-					std::cout << "STRIPPING ENABLED\n";
-					strip = true;
+					if( not strip )
+						std::cout << "STRIPPING ENABLED\n";
+					else
+						std::cout << "STRIPPING DISABLED\n";
+					strip = not strip;
 					break;
 				case 'h':
 					std::cout << R"at(INPUT FILE FORMAT:
 [] is used to make a tag with a space after the tag name. Any characters after will be the contents of the tag, example below:
    [p this will be text]              <p>this will be text</p>
 
-adding ) to the end of [] tags will remove the end tag, example below:
+Adding ) to the end of [] tags will remove the end tag, example below:
    [div unclosed div!])               <div>unclosed div!
 
-if you want to add any attributes to a tag just enclose the attribute in {} after tag name declaration
+If you want to add any attributes to a tag just enclose the attribute in {} after tag name declaration
    [meta{charset="UTF-8"}])           <meta charset="UTF-8">
 
-adding specifically 'class' or 'id' attributes is easier, just append # or . after the tag name declaration
+Adding specifically 'class' or 'id' attributes is easier, just append # or . after the tag name declaration
    [div.large large class]            <div class="large">large class</div>
 
-this works with 'href' by adding @ after tag name declarations, this needs to be at the end as it ends links with a space at a space
+This works with 'href' by adding @ after tag name declarations, this needs to be at the end as it ends links with a space at a space
    [a.large@http://gert.us website]   <a class="large" href="http://gert.us">website</a>
 like href, 'src' attribute is applied with $
 
-putting a * will comment out the rest of the line or until another *, this doesn't work in tag name declartion
-   *[a a comment]                     <!-- [a a comment] -->
+Putting a * will comment out the rest of the line or until another *, this doesn't work in tag name declaration
+   *[a a comment]                     <!--[a a comment]-->
    *[a a comment]* [p real text]      <!--[a a comment]--> <p>real text</p>
    [a*not a comment*]                 ERROR
 
-COMMNAND LINE ARGUMENTS:
--s * removes comments
+COMMAND LINE ARGUMENTS:
+-s * toggles removing comments, off by default
 -v * displays version
--h * displays this text)at" << std::endl;
+-h * displays this text
+PROGRAM USE:
+$ gert-ctml [arguments] FILENAMES SPACE SEPARATED)at" << std::endl;
 			}
 			
 			continue;

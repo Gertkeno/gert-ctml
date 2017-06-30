@@ -18,9 +18,9 @@ let b:current_syntax = "gctml"
 
 hi def link tagStart Constant
 hi def link tagEnd Constant
-hi def link tagQuickAttrib Comment
-hi def link tagCustomAttrib Comment
-hi def link tagLinkAttrib Comment
+hi def link tagQuickAttrib Conditional
+hi def link tagCustomAttrib Conditional
+hi def link tagLinkAttrib Conditional
 hi def link escaped Normal
-hi def link tagComment CursorColumn
+hi def link tagComment Comment
 hi def link characterCode Special

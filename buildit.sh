@@ -1,1 +1,1 @@
-g++ -o gert-ctml -std=gnu++14 -Wall main.cpp
+g++ -o gert-ctml -std=c++11 -Wall main.cpp
