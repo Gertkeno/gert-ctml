@@ -4,7 +4,7 @@
 
 typedef unsigned char ubyte;
 
-#define VERSION "0.4.12"
+#define VERSION "0.5.0"
 bool strip;
 
 std::string parse_data( char * dat )
@@ -89,9 +89,24 @@ std::string parse_data( char * dat )
 					}
 					//class or ID
 					++iterator;
-					while( isalpha( dat[iterator] ) or isdigit( dat[iterator] ) or dat[iterator] == '-' )
+					while( isalpha( dat[iterator] ) or isdigit( dat[iterator] ) or dat[iterator] == '-' or dat[iterator] == '.' or dat[iterator] == '#' )
 					{
-						name += dat[iterator];
+						if( dat[iterator] == '.' )
+						{
+							if( adtype.compare( "class" ) == 0 )
+								name += ' ';
+							else
+								break;
+						}
+						else if( dat[iterator] == '#' )
+						{
+							if( adtype.compare( "id" ) == 0 )
+								name += ' ';
+							else
+								break;
+						}
+						else
+							name += dat[iterator];
 						++iterator;
 					}
 
@@ -196,12 +211,17 @@ If you want to add any attributes to a tag just enclose the attribute in {} afte
 Adding specifically 'class' or 'id' attributes is easier, just append # or . after the tag name declaration
    [div.large large class]            <div class="large">large class</div>
 
-This works with 'href' by adding @ after tag name declarations, this needs to be at the end as it ends links with a space at a space
+You can concatenate several id or class attributes of the same type easily
+   [div.large.btn.blue large blue]    <div class="large btn blue">large blue</div>
+   [h1#main#banner.btn banner h1]     <h1 id="main banner" class="btn">banner h1</h1>
+
+The attribute 'href' is added with @ after tag name declarations, this needs to be at the end as it ends links at a space
    [a.large@http://gert.us website]   <a class="large" href="http://gert.us">website</a>
 like href, 'src' attribute is applied with $
+   [img$http://image.png ])           <img src="http://image.png">
 
 Putting a * will comment out the rest of the line or until another *, this doesn't work in tag name declaration
-   *[a a comment]                     <!--[a a comment]-->
+   *[a a comment]  [p real text]      <!--[a a comment]  [p real text]-->
    *[a a comment]* [p real text]      <!--[a a comment]--> <p>real text</p>
    [a*not a comment*]                 ERROR
 
