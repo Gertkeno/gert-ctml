@@ -220,6 +220,12 @@ The attribute 'href' is added with @ after tag name declarations, this needs to 
 like href, 'src' attribute is applied with $
    [img$http://image.png ])           <img src="http://image.png">
 
+Here is a list of the quick attribute notations
+	.	class
+	#	id
+	@	href
+	$	src
+
 Putting a * will comment out the rest of the line or until another *, this doesn't work in tag name declaration
    *[a a comment]  [p real text]      <!--[a a comment]  [p real text]-->
    *[a a comment]* [p real text]      <!--[a a comment]--> <p>real text</p>
