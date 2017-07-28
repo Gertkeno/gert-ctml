@@ -4,7 +4,7 @@
 
 typedef unsigned char ubyte;
 
-#define VERSION "0.5.0"
+#define VERSION "0.5.1"
 bool strip;
 
 std::string parse_data( char * dat )
@@ -159,9 +159,9 @@ std::string parse_data( char * dat )
 	}
 	if( tagNest.size() > 0 )
 	{
-		std::cout << "WARNING: missing " << tagNest.size() << " end tag ( ] )";
+		std::cout << "WARNING: missing " << tagNest.size() << " end tag";
 		if( tagNest.size() > 1 ) std::cout << 's';
-		std::cout << ". Specifically:\n";
+		std::cout << "( ] ). Specifically:\n";
 
 		for( auto &i: tagNest )
 		{
