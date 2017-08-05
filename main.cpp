@@ -4,7 +4,7 @@
 
 typedef unsigned char ubyte;
 
-#define VERSION "0.5.1"
+#define VERSION "0.5.2"
 bool strip;
 
 std::string parse_data( char * dat )
@@ -61,7 +61,7 @@ std::string parse_data( char * dat )
 						case '$': adtype = "src"; linkCheck = true; break;
 						case '{': break;
 						case '[':
-							std::cout << "WARNING: " << lineNumer << ": extra [ in tag name \"" << name << "\".\n";
+							std::cerr << "WARNING: " << lineNumer << ": extra [ in tag name \"" << name << "\".\n";
 							break;
 					}
 					//attribute name
@@ -112,13 +112,13 @@ std::string parse_data( char * dat )
 
 					if( adtype.empty() )
 					{
-						std::cout << "WARNING: " << lineNumer << ": unkown attribute notator.\n";
+						std::cerr << "WARNING: " << lineNumer << ": unkown attribute notator.\n";
 						continue;
 					}
 					if( not name.empty() )
 						adds.append( " " + adtype + "=\"" + name + "\"" );
 					else
-						std::cout << "WARNING: " << lineNumer << ": class or ID specified but not set.\n";
+						std::cerr << "WARNING: " << lineNumer << ": class or ID specified but not set.\n";
 
 					continue;
 				}
@@ -134,7 +134,7 @@ std::string parse_data( char * dat )
 			fullread.append( ">" );
 			if( dat[iterator] == ' ' ) ++iterator;
 			continue;//in case two [ on same line
-		}
+		}// else if( dat[iterator] == '[' )
 
 		//append end tag abc-cba style
 		if( dat[iterator] == ']' )
@@ -147,7 +147,7 @@ std::string parse_data( char * dat )
 			if( tagNest.size() > 0 )
 				tagNest.pop_back();
 			else
-				std::cout << "WARNING: " << lineNumer << ": too many end tags ( ] ).\n";
+				std::cerr << "WARNING: " << lineNumer << ": too many end tags ( ] ).\n";
 		}
 		else
 		{
@@ -159,13 +159,13 @@ std::string parse_data( char * dat )
 	}
 	if( tagNest.size() > 0 )
 	{
-		std::cout << "WARNING: missing " << tagNest.size() << " end tag";
-		if( tagNest.size() > 1 ) std::cout << 's';
-		std::cout << "( ] ). Specifically:\n";
+		std::cerr << "WARNING: missing " << tagNest.size() << " end tag";
+		if( tagNest.size() > 1 ) std::cerr << 's';
+		std::cerr << "( ] ). Specifically:\n";
 
 		for( auto &i: tagNest )
 		{
-			std::cout << i << std::endl;
+			std::cerr << i << std::endl;
 		}
 	}
 
@@ -176,10 +176,11 @@ int main( int argc, char** argv )
 {
 	if( argc <= 1 )
 	{
-		std::cout << "No input file. -h for help\n";
+		std::cerr << "No input file. -h for help\n";
 		return EXIT_FAILURE;
 	}
 	strip = false;
+	bool useCout = false;
 
 	for( ubyte i = 1u; i < argc; i++ )
 	{
@@ -188,17 +189,20 @@ int main( int argc, char** argv )
 			switch( argv[i][1] )
 			{
 				case 'v':
-					std::cout << "Version#" << VERSION << std::endl;
+					std::cerr << "Version#" << VERSION << std::endl;
+					break;
+				case 'c':
+					useCout = true;
 					break;
 				case 's':
 					if( not strip )
-						std::cout << "STRIPPING ENABLED\n";
+						std::cerr << "STRIPPING ENABLED\n";
 					else
-						std::cout << "STRIPPING DISABLED\n";
+						std::cerr << "STRIPPING DISABLED\n";
 					strip = not strip;
 					break;
 				case 'h':
-					std::cout << R"at(INPUT FILE FORMAT:
+					std::cerr << R"at(INPUT FILE FORMAT:
 [] is used to make a tag with a space after the tag name. Any characters after will be the contents of the tag, example below:
    [p this will be text]              <p>this will be text</p>
 
@@ -232,6 +236,7 @@ Putting a * will comment out the rest of the line or until another *, this doesn
    [a*not a comment*]                 ERROR
 
 COMMAND LINE ARGUMENTS:
+-c * outputs to command line instead of automatically determined file
 -s * toggles removing comments, off by default
 -v * displays version
 -h * displays this text
@@ -245,7 +250,7 @@ $ gert-ctml [arguments] FILENAMES SPACE SEPARATED)at" << std::endl;
 		std::ifstream readFile( argv[i], std::ios::ate );
 		if( not readFile.is_open() )
 		{
-			std::cout << "Couldn't read file " << argv[i] << std::endl;
+			std::cerr << "Couldn't read file " << argv[i] << std::endl;
 			continue;
 		}
 		size_t readLength = readFile.tellg();
@@ -254,21 +259,33 @@ $ gert-ctml [arguments] FILENAMES SPACE SEPARATED)at" << std::endl;
 		readFile.get( readData, readLength, '\0' );
 
 		//write file
-		std::string oname = argv[i];
-		oname = oname.substr( 0, oname.rfind( '.' )+1 );
-		oname.append( "html" );
-		std::cout << "OUTPUT FILE: " << oname << std::endl;
-		std::ofstream outFile( oname );
-		if( not outFile.is_open() )
+		if( not useCout )
 		{
-			std::cout << "Could not write file " << oname << std::endl;
-			continue;
+			std::string oname = argv[i];
+			oname = oname.substr( 0, oname.rfind( '.' )+1 );
+			oname.append( "html" );
+			std::cerr << "OUTPUT FILE: " << oname << std::endl;
+			std::ofstream outFile( oname );
+			if( not outFile.is_open() )
+			{
+				std::cerr << "Could not write file " << oname << std::endl;
+				continue;
+			}
+			std::string outData = parse_data( readData );
+			outFile << outData;
+			outFile << '\n';
 		}
-		std::string outData = parse_data( readData );
-		outFile << outData;
-		outFile << '\n';
+		else
+		{
+			std::cout << parse_data( readData ) << '\n';
+			if( argc > i+1 )
+			{
+				std::cerr << "Can't use -c with multiple input files\n";
+			}
+			delete[] readData;
+			break;
+		}
 
-		/* std::cout << outData << std::endl; */
 		//clean up
 		delete[] readData;
 	}
