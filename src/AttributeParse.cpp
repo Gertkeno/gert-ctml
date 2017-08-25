@@ -1,4 +1,5 @@
 #include <string>
+#include <iostream>
 
 //character lists
 bool whitelisted_character( char a )
