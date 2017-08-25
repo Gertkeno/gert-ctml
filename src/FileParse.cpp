@@ -19,7 +19,12 @@ std::string parse_in_stream( std::istream* i )
 		if( commenting )
 		{
 			if( tester == '*' or tester == '\n' )
+			{
 				commenting = false;
+				out += "-->";
+				continue;
+			}
+			out += tester;
 			i->get( tester );
 			continue;
 		}
@@ -42,12 +47,17 @@ std::string parse_in_stream( std::istream* i )
 		else if( tester == '*' )
 		{
 			commenting = true;
+			out += "<!--";
 		}
 		else
 		{
 			out += tester;
 		}
 		i->get( tester );
+	}
+	if( myTags.count() > 0 )
+	{
+		std::cerr << "WARNING: missing " << myTags.count() << " end tags" << std::endl;
 	}
 	return out;
 }

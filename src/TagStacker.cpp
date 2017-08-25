@@ -25,3 +25,8 @@ std::string TagStack::remove()
 	_stack.pop_back();
 	return end;
 }
+
+size_t TagStack::count()
+{
+	return _stack.size();
+}

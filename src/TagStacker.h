@@ -10,6 +10,7 @@ class TagStack
 		~TagStack();
 		void add( std::string name );
 		std::string remove( void );
+		size_t count();
 	private:
 		std::vector<std::string> _stack;
 };
