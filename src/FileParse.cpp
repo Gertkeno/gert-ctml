@@ -14,6 +14,12 @@ std::string extract_word( std::istream* i )
 	return extract;
 }
 
+std::string attribute_create( std::string line )
+{
+	std::string attribs;
+	return attribs;
+}
+
 std::string tag_creator( std::istream* i )
 {
 	std::string tag;
