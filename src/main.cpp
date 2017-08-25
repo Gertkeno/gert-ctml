@@ -8,12 +8,14 @@ bool strip;
 
 int main( int argc, char **argv )
 {
+	bool foundFile( false );
 	for( ubyte i = 1u; i < argc; i++ )
 	{
 		if( argv[i][0] != '-' )
 		{
 			std::string outFile( parse_in_stream( &std::cin ) );
 			std::cout << outFile;
+			foundFile = true;
 			continue;
 		}
 		switch( argv[i][1] )
@@ -74,6 +76,11 @@ PROGRAM USE:
 $ gert-ctml [arguments] FILENAMES SPACE SEPARATED)at" << std::endl;
 			break;
 		}
+	}//for( args )
+	if( not foundFile )
+	{
+		std::string outFile( parse_in_stream( &std::cin ) );
+		std::cout << outFile;
 	}
 
 	return EXIT_SUCCESS;

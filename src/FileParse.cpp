@@ -8,51 +8,37 @@ std::string extract_word( std::istream* i )
 	char t;
 	while( not i->get( t ).eof() )
 	{
-		if( t == ' ' or t == '\n' or t == '\t' ) break;
 		extract += t;
+		if( t == ' ' or t == '\n' or t == '\t' ) break;
 	}
 	return extract;
+}
+
+std::string tag_creator( std::istream* i )
+{
+	std::string tag;
+	std::string name( extract_word( i ) );
+	tag = '<' + name.substr( 0, name.length()-1 ) + '>';
+	if( name[name.length() - 1] != ' ' )
+	{
+		 tag += name[name.length()-1];
+	}
+	return tag;
 }
 
 std::string parse_in_stream( std::istream* i )
 {
 	std::string out;
 
-	//declare mode based compiling modes.
-	enum parseMode_t
-	{
-		TAG_DECLARATION,
-		PLAIN
-	} modal(PLAIN);
 	char tester;
 
 	while( not i->get( tester ).eof() )
 	{
-		bool printPlain(false);
-		switch( modal )
+		if( tester == '[' )
 		{
-			case TAG_DECLARATION:
-				if( tester == ' ' or tester == '\n' )
-				{
-					modal = PLAIN;
-					out += '>';
-					if( tester == '\n' ) out += '\n';
-					break;
-				}
-				printPlain = true;
-				break;
-			case PLAIN:
-				if( tester == '[' )
-				{
-					out += '<';
-					modal = TAG_DECLARATION;
-					break;
-				}
-				printPlain = true;
-				break;
+			out += tag_creator( i );
 		}
-		
-		if( printPlain )
+		else
 		{
 			out += tester;
 		}
