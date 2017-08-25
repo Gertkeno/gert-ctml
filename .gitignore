@@ -1,3 +1,4 @@
 *.swp
 gert-ctml
 test.*
+build/*
