@@ -1,5 +1,44 @@
 #include <string>
 
+//character lists
+bool whitelisted_character( char a )
+{
+	return isalpha( a ) or isdigit( a ) or a == '-';
+}
+
+bool link_characters( char a )
+{
+	return a == '@' or a == '$';
+}
+
+//word type attributes
+std::string word_attribute( std::string l, char sig, bool (*escape)(char) )
+{
+	std::string output;
+	size_t ifind = l.find( sig );
+	if( ifind < std::string::npos )
+	{
+		bool ignore(false);
+		for( auto i = ifind+1; i < l.length(); ++i )
+		{
+			if( l[i] == sig )
+			{
+				ignore = false;
+				output += ' ';
+				continue;
+			}
+			else if( escape( l[i] ) ) break;
+			else if( not whitelisted_character( l[i] ) )
+			{
+				ignore = true;
+			}
+			if( ignore ) continue;
+			output += l[i];
+		}
+	}
+	return output;
+}
+
 std::string attribute_create( std::string line )
 {
 	std::string attribs;
@@ -9,53 +48,13 @@ std::string attribute_create( std::string line )
 	std::string ids;
 
 	//IDS
-	size_t ifind = line.find( '#' );
-	if( ifind < std::string::npos )
-	{
-		bool ignore(false);
-		for( auto i = ifind+1; i < line.length(); ++i )
-		{
-			if( line[i] == '#' )
-			{
-				ignore = false;
-				ids += ' ';
-				continue;
-			}
-			else if( line[i] == '@' or line[i] == '$' ) break;
-			else if( not isalpha( line[i] ) and not isdigit( line[i] ) )
-			{
-				ignore = true;
-			}
-			if( ignore ) continue;
-			ids += line[i];
-		}
-	}
+	ids = word_attribute( line, '#', link_characters );
 
 	if( not ids.empty() )
 		attribs += " id=\"" + ids + "\"";
 
 	//CLASSES
-	size_t cfind = line.find( '.' );
-	if( cfind < std::string::npos )
-	{
-		bool ignore(false);
-		for( auto i = cfind+1; i < line.length(); ++i )
-		{
-			if( line[i] == '.' )
-			{
-				ignore = false;
-				classes += ' ';
-				continue;
-			}
-			else if( line[i] == '@' or line[i] == '$' ) break;
-			else if( not isalpha( line[i] ) and not isdigit( line[i] ) )
-			{
-				ignore = true;
-			}
-			if( ignore ) continue;
-			classes += line[i];
-		}
-	}
+	classes = word_attribute( line, '.', link_characters );
 
 	if( not classes.empty() )
 		attribs += " class=\"" + classes + "\"";
