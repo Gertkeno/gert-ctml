@@ -16,25 +16,23 @@ std::string word_attribute( std::string l, char sig, bool (*escape)(char) )
 {
 	std::string output;
 	size_t ifind = l.find( sig );
-	if( ifind < std::string::npos )
+	if( ifind >= std::string::npos ) return output;
+	bool ignore(false);
+	for( auto i = ifind+1; i < l.length(); ++i )
 	{
-		bool ignore(false);
-		for( auto i = ifind+1; i < l.length(); ++i )
+		if( l[i] == sig )
 		{
-			if( l[i] == sig )
-			{
-				ignore = false;
-				output += ' ';
-				continue;
-			}
-			else if( escape( l[i] ) ) break;
-			else if( not whitelisted_character( l[i] ) )
-			{
-				ignore = true;
-			}
-			if( ignore ) continue;
-			output += l[i];
+			ignore = false;
+			output += ' ';
+			continue;
 		}
+		else if( escape( l[i] ) ) break;
+		else if( not whitelisted_character( l[i] ) )
+		{
+			ignore = true;
+		}
+		if( ignore ) continue;
+		output += l[i];
 	}
 	return output;
 }
