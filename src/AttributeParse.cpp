@@ -3,7 +3,7 @@
 //character lists
 bool whitelisted_character( char a )
 {
-	return isalpha( a ) or isdigit( a ) or a == '-';
+	return isalpha( a ) or isdigit( a ) or a == '-' or a == '_';
 }
 
 bool link_characters( char a )
@@ -16,14 +16,17 @@ std::string word_attribute( std::string l, char sig, bool (*escape)(char) )
 {
 	std::string output;
 	size_t ifind = l.find( sig );
+	size_t plainBeg = l.find( '{' );
+	size_t plainEnd = l.find( '}' );
 	if( ifind >= std::string::npos ) return output;
-	bool ignore(false);
-	for( auto i = ifind+1; i < l.length(); ++i )
+	bool ignore(true);
+	for( auto i = 0u; i < l.length(); ++i )
 	{
+		if( i > plainBeg and i < plainEnd ) continue;
 		if( l[i] == sig )
 		{
 			ignore = false;
-			output += ' ';
+			if( not output.empty() ) output += ' ';
 			continue;
 		}
 		else if( escape( l[i] ) ) break;
@@ -35,6 +38,16 @@ std::string word_attribute( std::string l, char sig, bool (*escape)(char) )
 		output += l[i];
 	}
 	return output;
+}
+
+std::string link_attribute( std::string l, char sig )
+{
+	size_t hfind = l.rfind( sig );
+	if( hfind < std::string::npos )
+	{
+		return l.substr( hfind+1, std::string::npos );
+	}
+	return std::string();
 }
 
 std::string attribute_create( std::string line )
@@ -58,16 +71,23 @@ std::string attribute_create( std::string line )
 		attribs += " class=\"" + classes + "\"";
 
 	//HREF/SRC
-	size_t hfind = line.find( '@' );
-	if( hfind < std::string::npos )
+	std::string href = link_attribute( line, '@' );
+	if( not href.empty() )
 	{
-		attribs += " href=\"" + line.substr( hfind+1, std::string::npos ) + '"';
+		attribs += " href=\"" + href + '"';
 	}
 
-	size_t sfind = line.find( '$' );
-	if( sfind < std::string::npos )
+	std::string src = link_attribute( line, '$' );
+	if( not src.empty() )
 	{
-		attribs += " src=\"" + line.substr( sfind+1, std::string::npos ) + '"';
+		attribs += " src=\"" + src + '"';
+	}
+
+	size_t bfind = line.find( '{' );
+	if( bfind < std::string::npos )
+	{
+		size_t bend = line.find( '}' );
+		attribs += ' ' + line.substr( bfind+1, bend-bfind-1 );
 	}
 
 	return attribs;

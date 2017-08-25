@@ -7,10 +7,13 @@ std::string extract_word( std::istream* i )
 {
 	std::string extract;
 	char t;
+	bool inbracket(false);
 	while( not i->get( t ).eof() )
 	{
+		if( t == '{' ) inbracket = true;
+		else if( t == '}' ) inbracket = false;
 		extract += t;
-		if( t == ' ' or t == '\n' or t == '\t' ) break;
+		if( not inbracket and ( t == ' ' or t == '\n' or t == '\t' ) ) break;
 	}
 	return extract;
 }
@@ -26,6 +29,7 @@ std::string tag_creator( std::istream* i, TagStack* t )
 	quickSpot = std::min( name.find( '#' ), quickSpot );
 	quickSpot = std::min( name.find( '@' ), quickSpot );
 	quickSpot = std::min( name.find( '$' ), quickSpot );
+	quickSpot = std::min( name.find( '{' ), quickSpot );
 	tag = '<';
 	char end = name[name.length() - 1];
 	if( quickSpot >= std::string::npos )
