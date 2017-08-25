@@ -15,17 +15,13 @@ std::string extract_word( std::istream* i )
 	return extract;
 }
 
-std::string attribute_create( std::string line )
-{
-	std::string attribs;
-	return attribs;
-}
+std::string attribute_create( std::string l );
 
 std::string tag_creator( std::istream* i, TagStack* t )
 {
 	std::string tag;
 	std::string name( extract_word( i ) );
-	std::string attrib = attribute_create( name );
+	std::string attrib = attribute_create( name.substr( 0, name.length()-1 ) );
 	size_t quickSpot = name.find( '.' );
 	quickSpot = std::min( name.find( '#' ), quickSpot );
 	quickSpot = std::min( name.find( '@' ), quickSpot );
@@ -37,6 +33,10 @@ std::string tag_creator( std::istream* i, TagStack* t )
 	else
 		name = name.substr( 0, quickSpot );
 	tag += name;
+	if( not attrib.empty() )
+	{
+		tag += attrib;
+	}
 
 	tag += '>';
 	//appending returns
