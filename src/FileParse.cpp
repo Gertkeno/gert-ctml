@@ -22,15 +22,28 @@ std::string parse_in_stream( std::istream* i )
 			{
 				commenting = false;
 				out += "-->";
+				if( tester == '*' ) i->get(tester);
 				continue;
 			}
 			out += tester;
 			i->get( tester );
 			continue;
 		}
+		else if( tester == '\\' )
+		{
+			//skip \ character escape
+			i->get(tester);
+			out += tester;
+			//skip escaped character
+			i->get(tester);
+			continue;
+		}
 		if( tester == '[' )
 		{
 			out += tag_creator( i, &myTags );
+			//remove space directly after tag declaration
+			if( i->peek() == ' ' )
+				i->get(tester);
 		}
 		else if( tester == ']' )
 		{

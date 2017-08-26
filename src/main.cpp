@@ -1,19 +1,27 @@
 #include <iostream>
+#include <fstream>
 #include <FileParse.h>
 
 typedef unsigned char ubyte;
 
 #define VERSION "1.0.0"
-bool strip;
+bool useCout;
 
 int main( int argc, char **argv )
 {
+	bool useCout( false );
 	bool foundFile( false );
 	for( ubyte i = 1u; i < argc; i++ )
 	{
 		if( argv[i][0] != '-' )
 		{
-			std::string outFile( parse_in_stream( &std::cin ) );
+			std::ifstream inFile( argv[i] );
+			if( not inFile.is_open() )
+			{
+				std::cerr << "ERROR: could not open file '" << argv[i] << "' continuing..." << std::endl;
+				continue;
+			}
+			std::string outFile( parse_in_stream( &inFile ) );
 			std::cout << outFile;
 			foundFile = true;
 			continue;
@@ -24,15 +32,8 @@ int main( int argc, char **argv )
 				std::cerr << "Version#" << VERSION << std::endl;
 				break;
 			case 'c':
-				//useCout = true;
+				useCout = true;
 				break;
-			/*case 's':
-				if( not strip )
-					std::cerr << "STRIPPING ENABLED\n";
-				else
-					std::cerr << "STRIPPING DISABLED\n";
-				strip = not strip;
-				break;*/
 			case 'h':
 				std::cerr << R"at(INPUT FILE FORMAT:
 [] is used to make a tag with a space after the tag name. Any characters after will be the contents of the tag, example below:
@@ -69,11 +70,10 @@ Putting a * will comment out the rest of the line or until another *, this doesn
 
 COMMAND LINE ARGUMENTS:
 -c * outputs to command line instead of automatically determined file
--s * toggles removing comments, off by default
 -v * displays version
 -h * displays this text
 PROGRAM USE:
-$ gert-ctml [arguments] FILENAMES SPACE SEPARATED)at" << std::endl;
+$ gert-ctml [arguments] [FILENAMES SPACE SEPARATED])at" << std::endl;
 			break;
 		}
 	}//for( args )
