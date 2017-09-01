@@ -43,7 +43,16 @@ std::string word_attribute( std::string l, char sig, bool (*escape)(char) )
 
 std::string link_attribute( std::string l, char sig )
 {
-	size_t hfind = l.rfind( sig );
+	size_t hfind = l.find( sig );
+	size_t plainBeg = l.find( '{' );
+	size_t plainEnd = l.find( '}' );
+	if( plainBeg < std::string::npos and plainEnd < std::string::npos )
+	{
+		while( plainBeg < hfind and plainEnd > hfind )
+		{
+			hfind = l.find( sig, hfind+1 );
+		}
+	}
 	if( hfind < std::string::npos )
 	{
 		return l.substr( hfind+1, std::string::npos );
@@ -88,7 +97,14 @@ std::string attribute_create( std::string line )
 	if( bfind < std::string::npos )
 	{
 		size_t bend = line.find( '}' );
-		attribs += ' ' + line.substr( bfind+1, bend-bfind-1 );
+		if( bend < std::string::npos )
+		{
+			attribs += ' ' + line.substr( bfind+1, bend-bfind-1 );
+		}
+		else
+		{
+			std::cerr << "[WARNING] No closing } found on line with opening {" << std::endl;
+		}
 	}
 
 	return attribs;

@@ -1,10 +1,10 @@
 #include <iostream>
 #include <fstream>
 #include <FileParse.h>
+#include <Version.h>
 
 typedef unsigned char ubyte;
 
-#define VERSION "1.0.0"
 bool useCout;
 
 int main( int argc, char **argv )
@@ -18,11 +18,26 @@ int main( int argc, char **argv )
 			std::ifstream inFile( argv[i] );
 			if( not inFile.is_open() )
 			{
-				std::cerr << "ERROR: could not open file '" << argv[i] << "' continuing..." << std::endl;
+				std::cerr << "[ERROR] could not open file '" << argv[i] << "' continuing..." << std::endl;
 				continue;
 			}
 			std::string outFile( parse_in_stream( &inFile ) );
-			std::cout << outFile;
+			if( useCout )
+			{
+				std::cout << outFile;
+			}
+			else
+			{
+				std::string filename( argv[i] );
+				filename = filename.substr( 0, filename.rfind( '.' ) );
+				filename += ".html";
+				std::cerr << "[INFO] Writing to: " << filename << std::endl;
+				std::ofstream output( filename );
+				if( output.is_open() )
+				{
+					output << outFile;
+				}
+			}
 			foundFile = true;
 			continue;
 		}
@@ -79,6 +94,7 @@ $ gert-ctml [arguments] [FILENAMES SPACE SEPARATED])at" << std::endl;
 	}//for( args )
 	if( not foundFile )
 	{
+		std::cerr << "[INFO] No command line files, parsing from cin" << std::endl;
 		std::string outFile( parse_in_stream( &std::cin ) );
 		std::cout << outFile;
 	}

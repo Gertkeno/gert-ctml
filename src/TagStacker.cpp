@@ -18,7 +18,7 @@ std::string TagStack::remove()
 {
 	if( _stack.size() <= 0 )
 	{
-		std::cerr << "ERROR: Too many end tags" << std::endl;
+		std::cerr << "[ERROR] Too many end tags" << std::endl;
 		return std::string();
 	}
 	std::string end = "</" + *(_stack.end()-1) + '>';

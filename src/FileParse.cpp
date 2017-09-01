@@ -2,12 +2,13 @@
 #include <vector>
 #include <fstream>
 #include <TagStacker.h>
+#include <Version.h>
 
 std::string tag_creator( std::istream* i, TagStack* t );
 
 std::string parse_in_stream( std::istream* i )
 {
-	std::string out;
+	std::string out( "<!-- Made with gert-ctml version#" VERSION " -->\n" );
 
 	char tester;
 	i->get( tester );
@@ -70,7 +71,7 @@ std::string parse_in_stream( std::istream* i )
 	}
 	if( myTags.count() > 0 )
 	{
-		std::cerr << "WARNING: missing " << myTags.count() << " end tags" << std::endl;
+		std::cerr << "[WARNING] missing " << myTags.count() << " end tags" << std::endl;
 	}
 	return out;
 }
