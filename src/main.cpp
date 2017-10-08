@@ -2,6 +2,9 @@
 #include <fstream>
 #include <FileParse.h>
 #include <Version.h>
+#ifdef __linux__
+#include <unistd.h>
+#endif
 
 typedef unsigned char ubyte;
 
@@ -95,8 +98,19 @@ $ gert-ctml [arguments] [FILENAMES SPACE SEPARATED])at" << std::endl;
 	if( not foundFile )
 	{
 		std::cerr << "[INFO] No command line files, parsing from cin" << std::endl;
-		std::string outFile( parse_in_stream( &std::cin ) );
-		std::cout << outFile;
+		#ifdef __linux__
+		if( not isatty( fileno( stdin ) ) )
+		#else
+		if( true )
+		#endif
+		{
+			std::string outFile( parse_in_stream( &std::cin ) );
+			std::cout << outFile;
+		}
+		else
+		{
+			std::cerr << "[ERROR] No piped data from cin" << std::endl;
+		}
 	}
 
 	return EXIT_SUCCESS;
