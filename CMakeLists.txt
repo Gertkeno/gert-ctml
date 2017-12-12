@@ -1,7 +1,8 @@
-cmake_minimum_required(VERSION 3.6)
-project( gert-ctml )
+CMAKE_MINIMUM_REQUIRED(VERSION 3.6)
+PROJECT( gert-ctml )
 
-include_directories( src )
-file( GLOB SOURCES src/*.cpp )
+SET( CMAKE_CXX_STANDARD 11 )
+INCLUDE_DIRECTORIES( src )
+FILE( GLOB SOURCES src/*.cpp )
 MESSAGE(STATUS ${SOURCES})
-add_executable( gert-ctml ${SOURCES} )
+ADD_EXECUTABLE( gert-ctml ${SOURCES} )
