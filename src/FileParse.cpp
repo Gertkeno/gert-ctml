@@ -22,11 +22,10 @@ std::string parse_in_stream( std::istream* i )
 			if( tester == '*' or tester == '\n' )
 			{
 				commenting = false;
-				out += "-->";
 				if( tester == '*' ) i->get(tester);
 				continue;
 			}
-			out += tester;
+			//out += tester;
 			i->get( tester );
 			continue;
 		}
@@ -56,12 +55,12 @@ std::string parse_in_stream( std::istream* i )
 				out += myTags.remove();
 				continue;
 			}
-
 		}
 		else if( tester == '*' )
 		{
 			commenting = true;
-			out += "<!--";
+			while( std::isspace( out.back() ) and out.length() > 1 )
+				out.pop_back();
 		}
 		else
 		{
