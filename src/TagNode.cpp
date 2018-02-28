@@ -17,7 +17,19 @@ TagNode::~TagNode()
 
 void TagNode::write_to( std::ostream & o ) const
 {
-	o << '<' << name << attributes << '>';
+	o << '<' << name;
+	for( auto & i : attributes )
+	{
+		o << ' ';
+		if( i.first == "RAW" )
+		{
+			o << i.second;
+			continue;
+		}
+		o << i.first << "=\"" << i.second << '"';
+	}
+	o << '>';
+
 	if( not endTag )
 		return;
 	o << contents;

@@ -16,6 +16,7 @@ namespace ctml
 			TagNode root;
 		private:
 			void _from_string( TagNode * );
+			void _attribute_detect( TagNode *, char );
 			std::ifstream _file;
 	};
 }

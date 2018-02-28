@@ -26,7 +26,7 @@ void FileParse::_from_string( TagNode * n )
 	enum : char
 	{
 		NAME,
-		ATTRIB,
+		//ATTRIB,
 		CONTENT,
 	}state{n == &root ? CONTENT : NAME};
 
@@ -48,11 +48,10 @@ void FileParse::_from_string( TagNode * n )
 			else if( std::isspace( get ) )
 				state = CONTENT;
 			else
-				state = ATTRIB;
-			break;
-		case ATTRIB:
-			if( std::isspace( get ) )
+			{
+				_attribute_detect( n, get );
 				state = CONTENT;
+			}
 			break;
 		}
 		get = _file.get();
@@ -63,4 +62,82 @@ void FileParse::_from_string( TagNode * n )
 		n->endTag = false;
 		_file.get();
 	}
+}
+
+void FileParse::_attribute_detect( TagNode * n, char sen )
+{
+
+	struct Token
+	{
+		char a;
+		enum: char
+		{
+			HREF,
+			CLASS,
+			ID,
+			RAW,
+			SOURCE,
+			DONE,
+		} b;
+		std::string name;
+	};
+	static const Token tokens[]{
+		{'.',Token::CLASS,"class"},
+		{'#',Token::ID,"id"},
+		{'$',Token::SOURCE,"src"},
+		{'@',Token::HREF,"href"},
+		{'{',Token::RAW,"RAW"},
+	};
+	const Token * select{ nullptr };
+
+	for( auto & i : tokens )
+	{
+		if( i.a != sen )
+			continue;
+		select = &i;
+	}
+
+	if( select == nullptr )
+		return;
+
+	char get;
+	while( select != nullptr and select->b != Token::DONE )
+	{
+		get = _file.get();
+		bool append{false};
+		switch( select->b )
+		{
+		case Token::CLASS:
+		case Token::ID:
+			if( get == select->a )
+				n->attributes[select->name] += ' ';
+			else if( std::isalnum( get ) or get == '-' )
+				append = true;
+			else
+				select = nullptr;
+			break;
+		case Token::RAW:
+			if( get == '}' )
+			{
+				select = nullptr;
+				get = _file.get();
+			}
+			else
+				append = true;
+			break;
+		case Token::SOURCE:
+		case Token::HREF:
+			if( std::isspace( get ) )
+				select = nullptr;
+			else
+				append = true;
+			break;
+		case Token::DONE:
+			break;
+		}
+
+		if(append)
+			n->attributes[ select->name ] += get;
+	}
+	_attribute_detect( n, get );
 }

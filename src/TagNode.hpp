@@ -4,6 +4,8 @@
 #include <vector>
 #include <string>
 #include <ostream>
+#include <map>
+
 namespace ctml
 {
 	class TagNode
@@ -12,7 +14,8 @@ namespace ctml
 			TagNode();
 			~TagNode();
 
-			std::string contents, name, attributes;
+			std::string contents, name;
+			std::map<std::string, std::string> attributes;
 			void write_to( std::ostream & ) const;
 			void write_tree( std::ostream &, int = 0 ) const;
 			TagNode * const add_child();
