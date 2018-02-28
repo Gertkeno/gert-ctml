@@ -28,7 +28,7 @@ void FileParse::_from_string( TagNode * n )
 		NAME,
 		ATTRIB,
 		CONTENT,
-	}state{NAME};
+	}state{n == &root ? CONTENT : NAME};
 
 	while( get != ']' and get != '\0' and not _file.eof() )
 	{
@@ -43,6 +43,8 @@ void FileParse::_from_string( TagNode * n )
 		case NAME:
 			if( std::isalnum( get ) )
 				n->name += get;
+			else if( get == '[' )
+				std::cerr << fileName << ": Warning [ found in name declaration\n";
 			else if( std::isspace( get ) )
 				state = CONTENT;
 			else
@@ -55,6 +57,4 @@ void FileParse::_from_string( TagNode * n )
 		}
 		get = _file.get();
 	}
-	//if more [ blocks found
-	//_from_string( n->add_child() );
 }
