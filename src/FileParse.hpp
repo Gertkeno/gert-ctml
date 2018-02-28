@@ -15,7 +15,7 @@ namespace ctml
 			const std::string fileName;
 			TagNode root;
 		private:
-			TagNode * _from_string( TagNode * );
+			void _from_string( TagNode * );
 			std::ifstream _file;
 	};
 }

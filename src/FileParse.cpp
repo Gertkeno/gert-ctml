@@ -12,6 +12,7 @@ fileName{fn}
 		std::cerr << "ERROR: couldn't open file " << fileName << std::endl;
 		return;
 	}
+	root.name = "html";
 	_from_string( &root );
 }
 
@@ -19,8 +20,41 @@ FileParse::~FileParse()
 {
 }
 
-TagNode * FileParse::_from_string( TagNode * n )
+void FileParse::_from_string( TagNode * n )
 {
+	char get( _file.get() );
+	enum : char
+	{
+		NAME,
+		ATTRIB,
+		CONTENT,
+	}state{NAME};
+
+	while( get != ']' and get != '\0' and not _file.eof() )
+	{
+		switch( state )
+		{
+		case CONTENT:
+			if( get == '[' )
+				_from_string( n->add_child() );
+			else if( get != '\n' and get != '\t' )
+				n->contents += get;
+			break;
+		case NAME:
+			if( std::isalnum( get ) )
+				n->name += get;
+			else if( std::isspace( get ) )
+				state = CONTENT;
+			else
+				state = ATTRIB;
+			break;
+		case ATTRIB:
+			if( std::isspace( get ) )
+				state = CONTENT;
+			break;
+		}
+		get = _file.get();
+	}
 	//if more [ blocks found
 	//_from_string( n->add_child() );
 }

@@ -38,12 +38,12 @@ void TagNode::write_tree( std::ostream & o ) const
 		return;
 	}
 
-	o << "[\n";
+	o << "[";
 	for( auto & i : _children )
 	{
 		i->write_tree( o );
 	}
-	o << "\n]";
+	o << "]";
 }
 
 TagNode * const TagNode::add_child()
