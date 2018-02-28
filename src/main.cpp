@@ -1,18 +1,18 @@
 #include <iostream>
 #include <fstream>
-#include <FileParse.h>
 #include <Version.h>
 #ifdef __linux__
 #include <unistd.h>
 #endif
 
-typedef unsigned char ubyte;
+int main( int argc, char ** argv )
+{
+	return EXIT_SUCCESS;
+}
 
-bool useCout;
-
+/*
 int main( int argc, char **argv )
 {
-	bool useCout( false );
 	bool foundFile( false );
 	for( ubyte i = 1u; i < argc; i++ )
 	{
@@ -115,3 +115,4 @@ $ gert-ctml [arguments] [FILENAMES SPACE SEPARATED])at" << std::endl;
 
 	return EXIT_SUCCESS;
 }
+*/
