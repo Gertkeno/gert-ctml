@@ -12,7 +12,7 @@ int main( int argc, char ** argv )
 		return EXIT_SUCCESS;
 
 	ctml::FileParse m( argv[1] );
-	m.root.write_tree( std::cout );
+	m.root.write_tree( std::cerr );
 	std::cout << std::endl;
 	m.root.write_to( std::cout );
 	std::cout << std::endl;

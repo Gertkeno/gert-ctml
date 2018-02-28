@@ -17,18 +17,22 @@ TagNode::~TagNode()
 
 void TagNode::write_to( std::ostream & o, int a ) const
 {
-	o << '<' << name;
-	for( auto & i : attributes )
+	const bool t{ not name.empty() };
+	if( t )
 	{
-		o << ' ';
-		if( i.first == "RAW" )
+		o << '<' << name;
+		for( auto & i : attributes )
 		{
-			o << i.second;
-			continue;
+			o << ' ';
+			if( i.first == "RAW" )
+			{
+				o << i.second;
+				continue;
+			}
+			o << i.first << "=\"" << i.second << '"';
 		}
-		o << i.first << "=\"" << i.second << '"';
+		o << '>';
 	}
-	o << '>';
 
 	if( not endTag )
 		return;
@@ -38,12 +42,13 @@ void TagNode::write_to( std::ostream & o, int a ) const
 	{
 		i->write_to( o );
 	}
-	o << "</" << name << ">";
+	if( t )
+		o << "</" << name << ">";
 }
 
 void TagNode::write_tree( std::ostream & o, int a ) const
 {
-	o << name;
+	o << ( name.empty() ? "~" : name );
 	if( _children.empty() )
 	{
 		o << ',';
