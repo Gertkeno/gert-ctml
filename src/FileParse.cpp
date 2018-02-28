@@ -57,4 +57,10 @@ void FileParse::_from_string( TagNode * n )
 		}
 		get = _file.get();
 	}
+
+	if( _file.peek() == ')' )
+	{
+		n->endTag = false;
+		_file.get();
+	}
 }

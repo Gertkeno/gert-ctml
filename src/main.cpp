@@ -11,8 +11,8 @@ int main( int argc, char ** argv )
 	ctml::FileParse m( "test.ctml" );
 	m.root.write_tree( std::cout );
 	std::cout << std::endl;
-	//m.root.write_to( std::cout );
-	//std::cout << std::endl;
+	m.root.write_to( std::cout );
+	std::cout << std::endl;
 
 	return EXIT_SUCCESS;
 }
