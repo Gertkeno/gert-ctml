@@ -15,7 +15,7 @@ TagNode::~TagNode()
 	}
 }
 
-void TagNode::write_to( std::ostream & o ) const
+void TagNode::write_to( std::ostream & o, int a ) const
 {
 	o << '<' << name;
 	for( auto & i : attributes )

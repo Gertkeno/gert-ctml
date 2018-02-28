@@ -8,7 +8,10 @@
 
 int main( int argc, char ** argv )
 {
-	ctml::FileParse m( "test.ctml" );
+	if( argc <= 1 )
+		return EXIT_SUCCESS;
+
+	ctml::FileParse m( argv[1] );
 	m.root.write_tree( std::cout );
 	std::cout << std::endl;
 	m.root.write_to( std::cout );

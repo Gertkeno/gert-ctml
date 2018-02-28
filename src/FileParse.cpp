@@ -28,15 +28,23 @@ void FileParse::_from_string( TagNode * n )
 		NAME,
 		//ATTRIB,
 		CONTENT,
+		COMMENT,
 	}state{n == &root ? CONTENT : NAME};
 
-	while( get != ']' and get != '\0' and not _file.eof() )
+	while( (state == COMMENT or get != ']') and get != '\0' and not _file.eof() )
 	{
 		switch( state )
 		{
+		case COMMENT:
+			if( get == '*' or get == '\n' )
+				state = CONTENT;
+			std::cout << get;
+			break;
 		case CONTENT:
 			if( get == '[' )
 				_from_string( n->add_child() );
+			else if( get == '*' )
+				state = COMMENT;
 			else if( get != '\n' and get != '\t' )
 				n->contents += get;
 			break;
@@ -66,7 +74,6 @@ void FileParse::_from_string( TagNode * n )
 
 void FileParse::_attribute_detect( TagNode * n, char sen )
 {
-
 	struct Token
 	{
 		char a;
