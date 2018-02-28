@@ -14,7 +14,7 @@ namespace ctml
 
 			std::string contents, name, attributes;
 			void write_to( std::ostream & ) const;
-			void write_tree( std::ostream & ) const;
+			void write_tree( std::ostream &, int = 0 ) const;
 			TagNode * const add_child();
 			bool endTag;
 		private:
