@@ -5,11 +5,11 @@ if exists("b:current_syntax")
 	finish
 endif
 
-syn match tagStart '\v(^|\s)\[(\w|\d)+(\{.{-}\})=\S*' contains=tagQuickAttrib,tagCustomAttrib,tagLinkAttrib
+syn match tagStart '\v\[(\w|\d)*(\{.{-}\})=\S*' contains=tagQuickAttrib,tagCustomAttrib,tagLinkAttrib
 syn match tagCustomAttrib '\v\{.{-}\}' contained
 syn match tagQuickAttrib '\v(\.|\#)(\w|\d|-)+' contained
 syn match tagLinkAttrib '\v(\$|\@)\S+' contained
-syn match tagEnd '\v\\=(]\)|])' contains=escaped
+syn match tagEnd '\v(]\)|])'
 syn match escaped '\\.'
 syn match tagComment '\v(\*.{-}\*)|(\*.*)'
 syn match characterCode '&.\{-};'

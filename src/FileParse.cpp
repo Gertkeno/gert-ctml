@@ -45,6 +45,11 @@ void FileParse::_from_string( TagNode * n )
 				_from_string( n->add_child() );
 			else if( get == '*' )
 				state = COMMENT;
+			else if( get == '\\' )
+			{
+				get = _file.get();
+				n->contents += get;
+			}
 			else if( get != '\n' and get != '\t' )
 				n->contents += get;
 			break;
