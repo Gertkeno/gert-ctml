@@ -15,7 +15,7 @@ TagNode::~TagNode()
 	}
 }
 
-void TagNode::write_to( std::ostream & o, int a ) const
+void TagNode::write_html( std::ostream & o, int a ) const
 {
 	const bool t{ not name.empty() };
 	if( t )
@@ -40,7 +40,7 @@ void TagNode::write_to( std::ostream & o, int a ) const
 
 	for( auto &i : _children )
 	{
-		i->write_to( o );
+		i->write_html( o );
 	}
 	if( t )
 		o << "</" << name << ">";

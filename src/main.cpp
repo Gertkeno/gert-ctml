@@ -13,7 +13,7 @@ int main( int argc, char ** argv )
 		ctml::FileParse m( argv[i] );
 		m.root.write_tree( std::cerr );
 		std::cerr << '\n';
-		m.root.write_to( std::cout );
+		m.root.write_html( std::cout );
 		std::cout << '\n';
 	}
 
