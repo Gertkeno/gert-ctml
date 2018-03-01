@@ -24,7 +24,7 @@ int main( int argc, char ** argv )
 		{'t',Option::TREE},
 		{'v',Option::PRINT_VERSION},
 		{'h',Option::HELP},
-		{'g',Option::READABLE},
+		//{'g',Option::READABLE},
 	};
 
 	unsigned int setting{0};
@@ -91,9 +91,8 @@ COMMAND LINE ARGUMENTS:
 -t * outputs a structure tree based on input
 -v * displays version
 -h * displays this text
--g * makes output html more readable
 PROGRAM USE:
-$ gert-ctml [arguments] [FILENAMES SPACE SEPARATED])at" << std::endl;
+$ gert-ctml [arguments] [files])at" << std::endl;
 	}
 
 	for( int i = 1; i < argc; ++i )
