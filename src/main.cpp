@@ -11,21 +11,23 @@ int main( int argc, char ** argv )
 	struct Option
 	{
 		char name;
-		enum bit: char
+		enum bit: unsigned char
 		{
 			STDOUT       = 1 << 0,
 			TREE         = 1 << 1 | STDOUT,
 			PRINT_VERSION= 1 << 2,
 			HELP         = 1 << 3,
+			READABLE     = 1 << 4,
 		} var;
 	} static constexpr o[]{
 		{'c',Option::STDOUT},
 		{'t',Option::TREE},
 		{'v',Option::PRINT_VERSION},
 		{'h',Option::HELP},
+		{'g',Option::READABLE},
 	};
 
-	int setting{0};
+	unsigned int setting{0};
 	for( int i = 1; i < argc; ++i )
 	{
 		if( argv[i][0] != '-' )
@@ -89,6 +91,7 @@ COMMAND LINE ARGUMENTS:
 -t * outputs a structure tree based on input
 -v * displays version
 -h * displays this text
+-g * makes output html more readable
 PROGRAM USE:
 $ gert-ctml [arguments] [FILENAMES SPACE SEPARATED])at" << std::endl;
 	}
@@ -111,10 +114,14 @@ $ gert-ctml [arguments] [FILENAMES SPACE SEPARATED])at" << std::endl;
 			output = &file;
 		}
 
-		if( setting & Option::TREE )
+		if( (setting & Option::TREE) == Option::TREE )
 			m.root.write_tree( *output );
 		else
+		{
+			*output << "<!-- Made with gert-ctml version#" VERSION " -->\n";
+			*output << "<!DOCTYPE html>";
 			m.root.write_html( *output );
+		}
 
 		*output << '\n';
 	}
