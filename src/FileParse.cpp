@@ -38,7 +38,6 @@ void FileParse::_from_string( TagNode * n )
 		case COMMENT:
 			if( get == '*' or get == '\n' )
 				state = CONTENT;
-			std::cout << get;
 			break;
 		case CONTENT:
 			if( get == '[' )

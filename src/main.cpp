@@ -8,14 +8,14 @@
 
 int main( int argc, char ** argv )
 {
-	if( argc <= 1 )
-		return EXIT_SUCCESS;
-
-	ctml::FileParse m( argv[1] );
-	m.root.write_tree( std::cerr );
-	std::cout << std::endl;
-	m.root.write_to( std::cout );
-	std::cout << std::endl;
+	for( int i = 1; i < argc; ++i )
+	{
+		ctml::FileParse m( argv[i] );
+		m.root.write_tree( std::cerr );
+		std::cerr << '\n';
+		m.root.write_to( std::cout );
+		std::cout << '\n';
+	}
 
 	return EXIT_SUCCESS;
 }
