@@ -88,7 +88,6 @@ void FileParse::_attribute_detect( TagNode * n, char sen )
 			ID,
 			RAW,
 			SOURCE,
-			DONE,
 		} b;
 		std::string name;
 	};
@@ -106,13 +105,15 @@ void FileParse::_attribute_detect( TagNode * n, char sen )
 		if( i.a != sen )
 			continue;
 		select = &i;
+		if( n->attributes.count(i.name) > 0 )
+			n->attributes[i.name] += ' ';
 	}
 
 	if( select == nullptr )
 		return;
 
 	char get;
-	while( select != nullptr and select->b != Token::DONE )
+	while( select != nullptr )
 	{
 		get = _file.get();
 		bool append{false};
@@ -142,8 +143,6 @@ void FileParse::_attribute_detect( TagNode * n, char sen )
 				select = nullptr;
 			else
 				append = true;
-			break;
-		case Token::DONE:
 			break;
 		}
 

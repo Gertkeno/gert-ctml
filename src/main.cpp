@@ -8,62 +8,50 @@
 
 int main( int argc, char ** argv )
 {
+	struct Option
+	{
+		char name;
+		enum bit: char
+		{
+			STDOUT       = 1 << 0,
+			TREE         = 1 << 1 | STDOUT,
+			PRINT_VERSION= 1 << 2,
+			HELP         = 1 << 3,
+		} var;
+	} static constexpr o[]{
+		{'c',Option::STDOUT},
+		{'t',Option::TREE},
+		{'v',Option::PRINT_VERSION},
+		{'h',Option::HELP},
+	};
+
+	int setting{0};
 	for( int i = 1; i < argc; ++i )
 	{
-		ctml::FileParse m( argv[i] );
-		m.root.write_tree( std::cerr );
-		std::cerr << '\n';
-		m.root.write_html( std::cout );
-		std::cout << '\n';
-	}
-
-	return EXIT_SUCCESS;
-}
-
-/*
-int main( int argc, char **argv )
-{
-	bool foundFile( false );
-	for( ubyte i = 1u; i < argc; i++ )
-	{
 		if( argv[i][0] != '-' )
+			continue;
+		for( auto cv = argv[i] + 1; *cv != '\0'; ++cv )
 		{
-			std::ifstream inFile( argv[i] );
-			if( not inFile.is_open() )
+			bool valid{false};
+			for( auto & a : o )
 			{
-				std::cerr << "[ERROR] could not open file '" << argv[i] << "' continuing..." << std::endl;
-				continue;
-			}
-			std::string outFile( parse_in_stream( &inFile ) );
-			if( useCout )
-			{
-				std::cout << outFile;
-			}
-			else
-			{
-				std::string filename( argv[i] );
-				filename = filename.substr( 0, filename.rfind( '.' ) );
-				filename += ".html";
-				std::cerr << "[INFO] Writing to: " << filename << std::endl;
-				std::ofstream output( filename );
-				if( output.is_open() )
+				if( *cv == a.name )
 				{
-					output << outFile;
+					setting |= a.var;
+					valid = true;
+					break;
 				}
 			}
-			foundFile = true;
-			continue;
+			if( not valid )
+				std::cerr << "Unknown option '" << *cv << "' try -h\n";
 		}
-		switch( argv[i][1] )
-		{
-			case 'v':
-				std::cerr << "Version#" << VERSION << std::endl;
-				break;
-			case 'c':
-				useCout = true;
-				break;
-			case 'h':
-				std::cerr << R"at(INPUT FILE FORMAT:
+	}
+
+	if( setting & Option::PRINT_VERSION )
+		std::cerr << "Version#" VERSION << std::endl;
+	if( setting & Option::HELP )
+	{
+		std::cerr << R"at(INPUT FILE FORMAT:
 [] is used to make a tag with a space after the tag name. Any characters after will be the contents of the tag, example below:
    [p this will be text]              <p>this will be text</p>
 
@@ -98,31 +86,38 @@ Putting a * will comment out the rest of the line or until another *, this doesn
 
 COMMAND LINE ARGUMENTS:
 -c * outputs to command line instead of automatically determined file
+-t * outputs a structure tree based on input
 -v * displays version
 -h * displays this text
 PROGRAM USE:
 $ gert-ctml [arguments] [FILENAMES SPACE SEPARATED])at" << std::endl;
-			break;
-		}
-	}//for( args )
-	if( not foundFile )
+	}
+
+	for( int i = 1; i < argc; ++i )
 	{
-		std::cerr << "[INFO] No command line files, parsing from cin" << std::endl;
-		#ifdef __linux__
-		if( not isatty( fileno( stdin ) ) )
-		#else
-		if( true )
-		#endif
-		{
-			std::string outFile( parse_in_stream( &std::cin ) );
-			std::cout << outFile;
-		}
+		if( argv[i][0] == '-' )
+			continue;
+		ctml::FileParse m( argv[i] );
+		std::ostream * output{nullptr};
+
+		std::ofstream file;
+		if( setting & Option::STDOUT )
+			output = &std::cout;
 		else
 		{
-			std::cerr << "[ERROR] No piped data from cin" << std::endl;
+			const std::string as{ argv[i] };
+			const std::string nfileName{ as.substr( 0, as.rfind( '.' ) ).append(".html") };
+			file.open( nfileName );
+			output = &file;
 		}
+
+		if( setting & Option::TREE )
+			m.root.write_tree( *output );
+		else
+			m.root.write_html( *output );
+
+		*output << '\n';
 	}
 
 	return EXIT_SUCCESS;
 }
-*/
