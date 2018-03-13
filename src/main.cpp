@@ -95,11 +95,19 @@ PROGRAM USE:
 $ gert-ctml [arguments] [files])at" << std::endl;
 	}
 
+	if( argc <= 1 )
+	{
+		std::cout << "USE: $ gert-ctml [arguments] [files]\n";
+		return EXIT_SUCCESS;
+	}
+
 	for( int i = 1; i < argc; ++i )
 	{
 		if( argv[i][0] == '-' )
 			continue;
 		ctml::FileParse m( argv[i] );
+		if( m.get_error() )
+			continue;
 		std::ostream * output{nullptr};
 
 		std::ofstream file;
@@ -123,6 +131,7 @@ $ gert-ctml [arguments] [files])at" << std::endl;
 		}
 
 		*output << '\n';
+		std::cerr << "[INFO] Wrote html from " << argv[i] << '\n';
 	}
 
 	return EXIT_SUCCESS;

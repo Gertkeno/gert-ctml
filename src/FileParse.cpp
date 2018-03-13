@@ -9,11 +9,13 @@ fileName{fn}
 {
 	if( not _file.is_open() )
 	{
-		std::cerr << "ERROR: couldn't open file " << fileName << std::endl;
+		std::cerr << "[ERROR] couldn't open file " << fileName << std::endl;
+		error = true;
 		return;
 	}
 	root.name = "html";
 	_from_string( &root );
+	error = false;
 }
 
 FileParse::~FileParse()

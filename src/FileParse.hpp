@@ -14,7 +14,9 @@ namespace ctml
 
 			const std::string fileName;
 			TagNode root;
+			bool get_error() const { return error; };
 		private:
+			bool error;
 			void _from_string( TagNode * );
 			void _attribute_detect( TagNode *, char );
 			std::ifstream _file;
